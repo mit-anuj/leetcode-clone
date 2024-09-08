@@ -4,6 +4,7 @@ import { useSetRecoilState } from "recoil";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const setauthModalState = useSetRecoilState(authModalState);
@@ -20,14 +21,14 @@ const Login = () => {
     try {
       const user = await signInWithEmailAndPassword(inputs.email, inputs.password);
       if (!user) return;
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       console.log(error.message);
     }
   };
 
   useEffect(() => {
-    if (error) alert(error.message);
+    if (error) toast.error("invalid credentials",{position:"top-center",autoClose:3000,theme:'dark'})
   }, [error]);
   const handleClick = (val) => {
     setauthModalState((prev) => ({ ...prev, type: val }));

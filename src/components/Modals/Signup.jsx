@@ -36,7 +36,7 @@ const Signup = () => {
         inputs.password
       );
       if (!newUser) return;
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       console.log(error.message);
     }
