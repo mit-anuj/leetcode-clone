@@ -8,7 +8,7 @@ import {
 import { BsCheck2Circle } from "react-icons/bs";
 import { TiStarOutline } from "react-icons/ti";
 
-const ProblemDescription = () => {
+const ProblemDescription = ({ problem }) => {
   return (
     <div className="bg-dark-layer-1">
       {/* TAB */}
@@ -28,7 +28,7 @@ const ProblemDescription = () => {
           <div className="w-full">
             <div className="flex space-x-4">
               <div className="flex-1 mr-2 text-lg text-white font-medium">
-                Two Sum
+                {problem.title}
               </div>
             </div>
 
@@ -44,66 +44,60 @@ const ProblemDescription = () => {
               </div>
 
               <div className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-dark-gray-6">
-                <AiFillLike className="text-dark-blue-s" />
                 <AiFillLike />
 
                 <span className="text-xs">2</span>
               </div>
               <div className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-green-s text-dark-gray-6">
-                <AiFillDislike className="text-dark-blue-s" />
                 <AiFillDislike />
 
                 <span className="text-xs">0</span>
               </div>
               <div className="cursor-pointer hover:bg-dark-fill-3  rounded p-[3px]  ml-4 text-xl transition-colors duration-200 text-green-s text-dark-gray-6 ">
-                <AiFillStar className="text-dark-yellow" />
                 <TiStarOutline />
               </div>
             </div>
 
             {/* Problem Statement(paragraphs) */}
             <div className="text-white text-sm">
-              <p className="ml-3">
-                Give an array of intergers <code>nums</code> and an interger{" "}
-                <code>target</code> return
-                <em>
-                  indices of teh two numbers such that they add up to{" "}
-                </em>{" "}
-                <code>target</code>
-              </p>
-              <p className="mt-3">
-                You mau assume that each imput would have{" "}
-                <strong>exactly one solution</strong>, and you may not the same
-                element twice.
-              </p>
-              <p className="mt-3">You can return the answer in any order.</p>
+              <div
+                dangerouslySetInnerHTML={{ __html: problem.problemStatement }}
+              />
               {/* Examples */}
               <div className="mt-4">
-                {/* example 1 */}
-                <div>
-                  <p className="font-medium text-white">Example 1: </p>
-                  <div className="example-card">
-                    <pre>
-                      <strong className="text-white">
-                        Input: <strong>nums = [2,7,11,15], target = 9 </strong>
-                      </strong>
-                      <br />
-                      <strong>Output: </strong>[0,1] <br />
-                      <strong>Explaination: </strong>Because nums[0] + nums[1]
-                      == 9 we return [0,1]
-                    </pre>
+                {problem.examples.map((example, index) => (
+                  <div>
+                    <p className="font-medium text-white">
+                      Example {index + 1}:{" "}
+                    </p>
+                    {example.img && <img src={example.img} alt=""  className="mt-3"/>}
+                    <div className="example-card">
+                      <pre>
+                        <strong className="text-white">
+                          Input: <strong>{example.inputText}</strong>
+                        </strong>
+                        <br />
+                        <strong>Output: </strong>
+                        {example.outputText}
+                        <br />
+                        {example.explaination && (
+                          <>
+                            <strong>Explaination: </strong>
+                            {example.explaination}
+                          </>
+                        )}
+                      </pre>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 
             {/* Constraints */}
-            <div className="my-5">
+            <div className="my-5 pb-4">
               <div className="text-white text-sm font-medium">Constraints:</div>
               <ul className="text-white ml-5 list-disc ">
-                <li className="mt-2">
-                  <code>{`2 < nums.length < 10`}</code>
-                </li>
+                <div dangerouslySetInnerHTML={{__html: problem.constraints}}/>
               </ul>
             </div>
           </div>

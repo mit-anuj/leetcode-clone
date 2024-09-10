@@ -1,17 +1,17 @@
-import React from 'react'
-import Split from 'react-split'
-import ProblemDescription from './ProblemDescription/ProblemDescription'
-import Playground from './Playground/Playground'
+import React from "react";
+import Split from "react-split";
+import ProblemDescription from "./ProblemDescription/ProblemDescription";
+import Playground from "./Playground/Playground";
 
-const Workspace = () => {
+const Workspace = ({ problem }) => {
   return (
-    <Split className='split' minSize={0}>
-			<ProblemDescription  />
-			<div >
-                <Playground/>
-			</div>
-		</Split>
-  )
-}
+    <Split className="split" minSize={0}>
+      <ProblemDescription problem={problem} />
+      <div>
+        <Playground problem={problem}/>
+      </div>
+    </Split>
+  );
+};
 
-export default Workspace
+export default Workspace;

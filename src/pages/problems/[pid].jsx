@@ -1,14 +1,52 @@
-import Topbar from '@/components/Topbar/Topbar'
-import Workspace from '@/components/Workspace/Workspace'
-import React from 'react'
+import Topbar from "@/components/Topbar/Topbar";
+import Workspace from "@/components/Workspace/Workspace";
+import { problems } from "@/utils/problems";
+import React from "react";
 
-const PrblemPage = () => {
+const ProblemPage = ({problem}) => {
+    console.log(problem)
   return (
     <div>
-      <Topbar problemPage={true}/>
-      <Workspace/>
+      <Topbar problemPage={true} />
+      <Workspace problem={problem}/>
     </div>
-  )
+  );
+};
+
+export default ProblemPage;
+
+// fetch the problems data
+// this will create the dynamic routes
+export async function getStaticPaths() {
+	const paths = Object.keys(problems).map((key) => ({
+		params: { pid: key },
+	}));
+    // console.log("paths",paths)
+	return {
+		paths,
+		fallback: false,
+	};
 }
 
-export default PrblemPage
+// getStaticProps will fetch teh problem data.
+export async function getStaticProps( {params} ) {
+	const { pid } = params;
+	const problem = problems[pid];
+	if (!problem) {
+		return {
+			notFound: true,
+		};
+	}
+    if (problem.handlerFunction) {
+        // this function is used to convert the json into string
+        problem.handlerFunction = problem.handlerFunction.toString();
+    } else {
+        console.warn(`Handler function missing for problem with id: ${pid}`);
+    }
+
+	return {
+		props: {
+			problem
+		},
+	};
+}
