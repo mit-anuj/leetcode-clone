@@ -4,7 +4,6 @@ import { problems } from "@/utils/problems";
 import React from "react";
 
 const ProblemPage = ({problem}) => {
-    console.log(problem)
   return (
     <div>
       <Topbar problemPage={true} />

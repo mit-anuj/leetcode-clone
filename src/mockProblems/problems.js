@@ -9,7 +9,7 @@ export const problems = [
 	},
 	{
 		id: "reverse-linked-list",
-		title: "Reverse Linked List",
+		title: "2.Reverse Linked List",
 		difficulty: "Hard",
 		category: "Linked List",
 		order: 2,
@@ -17,7 +17,7 @@ export const problems = [
 	},
 	{
 		id: "jump-game",
-		title: "Jump Game",
+		title: "3.Jump Game",
 		difficulty: "Medium",
 		category: "Dynamic Programming",
 		order: 3,
@@ -25,7 +25,7 @@ export const problems = [
 	},
 	{
 		id: "valid-parentheses",
-		title: "Valid Parentheses",
+		title: "4.Valid Parentheses",
 		difficulty: "Easy",
 		category: "Stack",
 		order: 4,
@@ -33,7 +33,7 @@ export const problems = [
 	},
 	{
 		id: "search-a-2d-matrix",
-		title: "Search a 2D Matrix",
+		title: "5.Search a 2D Matrix",
 		difficulty: "Medium",
 		category: "Binary Search",
 		order: 5,
@@ -41,7 +41,7 @@ export const problems = [
 	},
 	{
 		id: "container-with-most-water",
-		title: "Container With Most Water",
+		title: "6.Container With Most Water",
 		difficulty: "Medium",
 		category: "Two Pointers",
 		order: 6,
@@ -49,7 +49,7 @@ export const problems = [
 	},
 	{
 		id: "merge-intervals",
-		title: "Merge Intervals",
+		title: "7.Merge Intervals",
 		difficulty: "Medium",
 		category: "intervals",
 		order: 7,
@@ -57,7 +57,7 @@ export const problems = [
 	},
 	{
 		id: "maximum-depth-of-binary-tree",
-		title: "Maximum Depth of Binary Tree",
+		title: "8.Maximum Depth of Binary Tree",
 		difficulty: "Easy",
 		category: "Tree",
 		order: 8,
@@ -65,7 +65,7 @@ export const problems = [
 	},
 	{
 		id: "best-time-to-buy-and-sell-stock",
-		title: "Best Time to Buy and Sell Stock",
+		title: "9.Best Time to Buy and Sell Stock",
 		difficulty: "Easy",
 		category: "Array",
 		order: 9,
@@ -73,7 +73,7 @@ export const problems = [
 	},
 	{
 		id: "subsets",
-		title: "Subsets",
+		title: "10.Subsets",
 		difficulty: "Medium",
 		category: "Backtracking",
 		order: 10,

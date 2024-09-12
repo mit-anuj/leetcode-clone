@@ -53,7 +53,7 @@ const Topbar = ({ problemPage }) => {
               Premium
             </a>
           </div>
-          {problemPage && <Timer/>}
+          {user && problemPage && <Timer/>}
           {!user[0] && (
             <Link href="/auth">
               <button

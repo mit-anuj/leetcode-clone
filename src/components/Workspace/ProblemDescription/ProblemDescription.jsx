@@ -1,4 +1,9 @@
-import React from "react";
+import CircleSkeleton from "@/components/Skeleton/CircleSkeleton";
+import RectangleSkeleton from "@/components/Skeleton/RectangleSkeleton";
+import { auth, firestore } from "@/firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import {
   AiFillDislike,
   AiFillLike,
@@ -9,6 +14,10 @@ import { BsCheck2Circle } from "react-icons/bs";
 import { TiStarOutline } from "react-icons/ti";
 
 const ProblemDescription = ({ problem }) => {
+
+  const {currentProblem,loading,problemDifficultyClass} = useGetCurrentProblem(problem.id)
+  const {liked,disliked,solved,starred} = useGetUsersDataOnProblem(problem.id)
+
   return (
     <div className="bg-dark-layer-1">
       {/* TAB */}
@@ -32,11 +41,12 @@ const ProblemDescription = ({ problem }) => {
               </div>
             </div>
 
-            <div className="flex items-center mt-3">
+            {!loading && (
+              <div className="flex items-center mt-3">
               <div
-                className={`text-olive bg-olive inline-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}
+                className={`${problemDifficultyClass} inline-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}
               >
-                Easy
+                {currentProblem.difficulty}
               </div>
 
               <div className="rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-green-s text-dark-green-s">
@@ -44,19 +54,29 @@ const ProblemDescription = ({ problem }) => {
               </div>
 
               <div className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-dark-gray-6">
-                <AiFillLike />
+                {liked? <AiFillLike className="text-dark-blue-s"/>:<AiFillLike />}
+                
 
-                <span className="text-xs">2</span>
+                <span className="text-xs">{currentProblem.likes}</span>
               </div>
               <div className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-green-s text-dark-gray-6">
                 <AiFillDislike />
 
-                <span className="text-xs">0</span>
+                <span className="text-xs">{currentProblem.dislikes}</span>
               </div>
               <div className="cursor-pointer hover:bg-dark-fill-3  rounded p-[3px]  ml-4 text-xl transition-colors duration-200 text-green-s text-dark-gray-6 ">
                 <TiStarOutline />
               </div>
             </div>
+            )}
+            {loading && (
+              <div className="ml-3 flex space-x-2">
+                <RectangleSkeleton/>
+                <CircleSkeleton/>
+                <RectangleSkeleton/>
+                <CircleSkeleton/>
+              </div>
+            )}
 
             {/* Problem Statement(paragraphs) */}
             <div className="text-white text-sm">
@@ -66,11 +86,13 @@ const ProblemDescription = ({ problem }) => {
               {/* Examples */}
               <div className="mt-4">
                 {problem.examples.map((example, index) => (
-                  <div>
+                  <div key={index}>
                     <p className="font-medium text-white">
                       Example {index + 1}:{" "}
                     </p>
-                    {example.img && <img src={example.img} alt=""  className="mt-3"/>}
+                    {example.img && (
+                      <img src={example.img} alt="" className="mt-3" />
+                    )}
                     <div className="example-card">
                       <pre>
                         <strong className="text-white">
@@ -97,7 +119,9 @@ const ProblemDescription = ({ problem }) => {
             <div className="my-5 pb-4">
               <div className="text-white text-sm font-medium">Constraints:</div>
               <ul className="text-white ml-5 list-disc ">
-                <div dangerouslySetInnerHTML={{__html: problem.constraints}}/>
+                <div
+                  dangerouslySetInnerHTML={{ __html: problem.constraints }}
+                />
               </ul>
             </div>
           </div>
@@ -108,3 +132,58 @@ const ProblemDescription = ({ problem }) => {
 };
 
 export default ProblemDescription;
+
+function useGetCurrentProblem(problemId) {
+  const [currentProblem, setCurrentProblem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [problemDifficultyClass, setProblemDifficultyClass] = useState("");
+
+  useEffect(() => {
+    const getCurrentProblem = async () => {
+      setLoading(true);
+      const docRef = doc(firestore, "problems", problemId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const problem = docSnap.data();
+        setCurrentProblem({ id: docSnap.id, ...problem });
+        setProblemDifficultyClass(
+          problem.difficulty === "Easy"
+            ? "bg-olive text-olive"
+            : problem.difficulty === "Medium"
+            ? "bg-dark-yellow text-dark-yellow"
+            : "bg-dark-pink text-dark-pink"
+        );
+      }
+      setLoading(false);
+    };
+    getCurrentProblem();
+  }, [problemId]);
+  return { currentProblem, loading, problemDifficultyClass };
+}
+
+function useGetUsersDataOnProblem(problemId) {
+	const [data, setData] = useState({ liked: false, disliked: false, starred: false, solved: false });
+	const [user] = useAuthState(auth);
+
+	useEffect(() => {
+		const getUsersDataOnProblem = async () => {
+			const userRef = doc(firestore, "users", user.uid);
+			const userSnap = await getDoc(userRef);
+			if (userSnap.exists()) {
+				const data = userSnap.data();
+				const { solvedProblems, likedProblems, dislikedProblems, starredProblems } = data;
+				setData({
+					liked: likedProblems.includes(problemId), // likedProblems["two-sum","jump-game"]
+					disliked: dislikedProblems.includes(problemId),
+					starred: starredProblems.includes(problemId),
+					solved: solvedProblems.includes(problemId),
+				});
+			}
+		};
+
+		if (user) getUsersDataOnProblem();
+		return () => setData({ liked: false, disliked: false, starred: false, solved: false });
+	}, [problemId, user]);
+
+	return { ...data, setData };
+}
