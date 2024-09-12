@@ -56,7 +56,7 @@ const Signup = () => {
         starredProblems: [],
       };
       try {
-        await setDoc(doc(firestore, "users", "anuj"), userData);
+        await setDoc(doc(firestore, "users", newUser.user.uid), userData);
         console.log("this is workding")
       } catch (error) {
         console.log(error.message);
