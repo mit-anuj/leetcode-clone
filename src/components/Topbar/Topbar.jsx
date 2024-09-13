@@ -9,23 +9,47 @@ import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import Timer from "../Timer/Timer";
+import { useRouter } from "next/router";
+import { problems } from "@/utils/problems";
 
 const Topbar = ({ problemPage }) => {
   const setAuthModalState = useSetRecoilState(authModalState);
   const user = useAuthState(auth);
+  const router = useRouter();
 
   const handleClick = () => {
     setAuthModalState((prev) => ({ ...prev, isOpen: true, type: "login" }));
   };
+
+  const handleProblemChange = (isForward) => {
+    const {order} = problems[router.query.pid];
+    const direction = isForward? 1: -1;
+    const nextProblemOrder = order + direction;
+    const nextProblemKey = Object.keys(problems).find(key => problems[key].order === nextProblemOrder);
+//  if we are on the last problem and the user click on the forward button then we will move to the first problem.
+     if(isForward && !nextProblemKey){
+      const firstProblemKey = Object.keys(problems).find(key => problems[key].order === 1);
+      router.push(`/problems/${firstProblemKey}`)
+     }else if(!isForward && !nextProblemKey){// it means the user is on the first problem and clicked on previous button.
+      const lastProblemKey = Object.keys(problems).find(key => problems[key].order === Object.keys(problems).length)
+      router.push(`/problems/${lastProblemKey}`);
+     } else{
+      router.push(`/problems/${nextProblemKey}`)
+     }
+  };
   return (
     <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 bg-dark-layer-1 text-dark-gray-7">
-      <div className={`flex w-full items-center justify-between ${!problemPage?"max-w-[1200px] mx-auto":''}`}>
+      <div
+        className={`flex w-full items-center justify-between ${
+          !problemPage ? "max-w-[1200px] mx-auto" : ""
+        }`}
+      >
         <Link href="#" className="h-[22px] flex-1">
           <img src="/logo-full.png" alt="logo" className="h-full" />
         </Link>
         {problemPage && (
           <div className="flex items-center gap-4 flex-1 justify-center">
-            <div className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer">
+            <div className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer" onClick={()=> handleProblemChange(false)}>
               <FaChevronLeft />
             </div>
             <Link
@@ -37,7 +61,7 @@ const Topbar = ({ problemPage }) => {
               </div>
               <p>ProblemList</p>
             </Link>
-            <div className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer">
+            <div className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer" onClick={()=> handleProblemChange(true)}>
               <FaChevronRight />
             </div>
           </div>
@@ -53,7 +77,7 @@ const Topbar = ({ problemPage }) => {
               Premium
             </a>
           </div>
-          {user && problemPage && <Timer/>}
+          {user && problemPage && <Timer />}
           {!user[0] && (
             <Link href="/auth">
               <button

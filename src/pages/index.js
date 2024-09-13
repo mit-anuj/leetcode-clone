@@ -1,3 +1,4 @@
+import useHasMounted from "@/components/hooks/useHasMounted";
 import ProblemTable from "@/components/ProbelmTable/ProblemTable";
 import Topbar from "@/components/Topbar/Topbar";
 import { auth, firestore } from "@/firebase/firebase";
@@ -7,6 +8,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 export default function Home() {
   const user = useAuthState(auth);
+  const [loadingProblems,setLoadingProblems] = useState(true);
+  const hasMounted = useHasMounted();
+
+  if(!hasMounted) {return null;}
   // ! used in the form that is adding the problems in the database.
   // const [inputs, setInputs] = useState({
   //   id: "",
@@ -49,8 +54,6 @@ export default function Home() {
   //     console.log(error);
   //   }
   // };
-console.log(user)
-  const [loadingProblems,setLoadingProblems] = useState(true);
   return (
     <main className="bg-dark-layer-2 min-h-screen">
       <Topbar problemPage={false} />
