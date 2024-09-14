@@ -21,7 +21,7 @@ const Login = () => {
     try {
       const user = await signInWithEmailAndPassword(inputs.email, inputs.password);
       if (!user) return;
-      router.push("/");
+      router.push("/api/dashboard");
     } catch (error) {
       console.log(error.message);
     }

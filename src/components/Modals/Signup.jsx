@@ -61,7 +61,7 @@ const Signup = () => {
       } catch (error) {
         console.log(error.message);
       }
-      router.push("/");
+      router.push("/api/dashboard");
     } catch (error) {
       toast.error(error.message, { position: "top-center" });
     } finally {
