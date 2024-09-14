@@ -4,14 +4,23 @@ import { AiFillYoutube } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import YouTube from "react-youtube";
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { firestore } from "@/firebase/firebase";
-const ProblemTable = ({setLoadingProblems}) => {
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { auth, firestore } from "@/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+const ProblemTable = ({ setLoadingProblems }) => {
   const [youtubePlayer, setYoutubePlayer] = useState({
     isOpen: false,
     videoId: "",
   });
   const problems = useGetProblems(setLoadingProblems);
+  const solvedProblem = useGetSolvedProblems();
   const handleYoutubeClick = (videoId) => {
     setYoutubePlayer({ videoId: videoId, isOpen: true });
   };
@@ -45,7 +54,7 @@ const ProblemTable = ({setLoadingProblems}) => {
               key={problem.id}
             >
               <th className="px-2 py-4 font-medium whitespace-nowrap text-dark-green-s">
-                <BsCheckCircle fontSize={"18"} width="18" />
+                {solvedProblem.includes(problem.id) && <BsCheckCircle fontSize={"18"} width="18" />}
               </th>
               <td className="px-6 py-4">
                 <Link
@@ -104,23 +113,46 @@ const ProblemTable = ({setLoadingProblems}) => {
 
 export default ProblemTable;
 
-function useGetProblems(setLoadingProblems){
-  const [problems,setProblems] = useState([]);
-  
-  useEffect(()=>{
-    const getProblems = async()=>{
+function useGetProblems(setLoadingProblems) {
+  const [problems, setProblems] = useState([]);
+
+  useEffect(() => {
+    const getProblems = async () => {
       // fetching data logic
       setLoadingProblems(true);
-      const q = query(collection(firestore,"problems"),orderBy("order","asc"));
+      const q = query(
+        collection(firestore, "problems"),
+        orderBy("order", "asc")
+      );
       const querySnapshot = await getDocs(q);
       const tmp = [];
-      querySnapshot.forEach((doc)=>{
-        tmp.push({id:doc.id,...doc.data()})
-      })
+      querySnapshot.forEach((doc) => {
+        tmp.push({ id: doc.id, ...doc.data() });
+      });
       setProblems(tmp);
       setLoadingProblems(false);
-    }
+    };
     getProblems();
-  },[])
+  }, []);
   return problems;
+}
+
+function useGetSolvedProblems() {
+  const [solvedProblems, setSolvedProblems] = useState([]);
+  const [user] = useAuthState(auth);
+
+  useEffect(() => {
+    const getSolvedProblems = async () => {
+      const userRef = doc(firestore, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      
+      if (userDoc.exists()) {
+        setSolvedProblems(userDoc.data().solvedProblems);
+      }
+    };
+    if (user) getSolvedProblems();
+    if(!user) getSolvedProblems();
+  }, [user]);
+
+  return solvedProblems;
 }

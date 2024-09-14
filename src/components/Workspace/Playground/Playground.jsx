@@ -11,7 +11,8 @@ import { toast } from "react-toastify";
 import { problems } from "@/utils/problems";
 import { useRouter } from "next/router";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
-const Playground = ({ problem, setSuccess,setSolved }) => {
+import { useLocalStorage } from "@uidotdev/usehooks";
+const Playground = ({ problem, setSuccess, setSolved }) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState(0);
   let [userCode, setUserCode] = useState(problem.starterCode);
   const user = useAuthState(auth);
@@ -19,7 +20,12 @@ const Playground = ({ problem, setSuccess,setSolved }) => {
   const {
     query: { pid },
   } = router;
-
+  const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
+  const [settings, setSettings] = useState({
+    fontSize: fontSize,
+    settingsModalIsOpen: false,
+    dropdownIsOpen: false,
+  });
   const handleSubmit = async () => {
     if (!user[0]) {
       toast.error("please login first", {
@@ -30,7 +36,7 @@ const Playground = ({ problem, setSuccess,setSolved }) => {
       return;
     }
     try {
-      userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName))
+      userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
       const cb = new Function(`return ${userCode}`)();
       const success = problems[pid].handlerFunction(cb);
       if (success) {
@@ -43,10 +49,10 @@ const Playground = ({ problem, setSuccess,setSolved }) => {
         setTimeout(() => {
           setSuccess(false);
         }, 4000);
-        const userRef = doc(firestore,'users',user[0].uid);
-        await updateDoc(userRef,{
-          solvedProblems:arrayUnion(pid),
-        })
+        const userRef = doc(firestore, "users", user[0].uid);
+        await updateDoc(userRef, {
+          solvedProblems: arrayUnion(pid),
+        });
         setSolved(true);
       }
     } catch (error) {
@@ -64,28 +70,60 @@ const Playground = ({ problem, setSuccess,setSolved }) => {
         toast.error(error.message, {
           position: "top-center",
           theme: "dark",
+          autoClose: 5000,
+        });
+      }
+    }
+  };
+  const handleRun = async () => {
+    try {
+      userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
+      const cb = new Function(`return ${userCode}`)();
+      const success = problems[pid].handlerFunction(cb);
+      if (success) {
+        toast.success("All sample test passed", {
+          position: "top-center",
+          theme: "dark",
           autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      if (
+        error.message.startsWith(
+          "Error: AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+        )
+      ) {
+        toast.error("Oops! one or more test cases failed", {
+          position: "top-center",
+          theme: "dark",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error(error.message, {
+          position: "top-center",
+          theme: "dark",
+          autoClose: 5000,
         });
       }
     }
   };
 
-
-  useEffect(()=>{
-    const code = localStorage.getItem(`code-${pid}`)
-    if(user[0]){
-      setUserCode(code?JSON.parse(code):problem.starterCode)
-    }else{
-      setUserCode(problem.starterCode)
+  useEffect(() => {
+    const code = localStorage.getItem(`code-${pid}`);
+    if (user[0]) {
+      setUserCode(code ? JSON.parse(code) : problem.starterCode);
+    } else {
+      setUserCode(problem.starterCode);
     }
-  },[pid,user[0],problem.starterCode])
+  }, [pid, user[0], problem.starterCode]);
   const onChange = (value) => {
     setUserCode(value);
-    localStorage.setItem(`code-${pid}`,JSON.stringify(value))
+    localStorage.setItem(`code-${pid}`, JSON.stringify(value));
   };
   return (
     <div className="flex flex-col bg-dark-layer-1 relative overflow-x-hidden">
-      <PreferenceNav />
+      {console.log(settings)}
+      <PreferenceNav settings={settings} setSettings={setSettings} />
 
       <Split
         className="h-[calc(100vh-94px)]"
@@ -98,7 +136,7 @@ const Playground = ({ problem, setSuccess,setSolved }) => {
             value={userCode}
             theme={vscodeDark}
             extensions={[javascript()]}
-            style={{ fontSize: 16 }}
+            style={{ fontSize: settings.fontSize }}
             onChange={onChange}
           />
         </div>
@@ -146,7 +184,7 @@ const Playground = ({ problem, setSuccess,setSolved }) => {
             </div>
           </div>
         </div>
-        <EditorFooter handleSubmit={handleSubmit} />
+        <EditorFooter handleSubmit={handleSubmit} handleRun={handleRun} />
       </Split>
     </div>
   );
