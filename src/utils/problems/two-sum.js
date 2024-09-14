@@ -1,33 +1,35 @@
 import assert from "assert";
 
-const starterCodeTwoSum = `function (nums,target){
+const starterCodeTwoSum = `function twoSum(nums,target){
     // code here
 }`
 // checks if the user has the correct code
 const handlerTwoSum = (fn)=>{
     // fn is the user code that is written by the person.
     try {
-        const nums = [
-            [2,7,11,15],
-            [3,2,4],
-            [3,3]
-        ];
-
-        const target = [9,6,6];
-        const answers = [
-            [0,1],
-            [1,2],
-            [0,1] 
-        ]
-
-        for(let i=0; i<nums.length; i++) {
-            // result is the output of the function and answer is the expected output
-            const result = fn(nums[i], target[i])
-            assert.deepStrictEqual(result,answers[i]);
-        }
-        return true;
+      const nums = [
+        [2, 7, 11, 15],
+        [3, 2, 4],
+        [3, 3],
+      ];
+  
+      const targets = [9, 6, 6];
+      const answers = [
+        [0, 1],
+        [1, 2],
+        [0, 1],
+      ];
+  
+      // loop all tests to check if the user's code is correct
+      for (let i = 0; i < nums.length; i++) {
+        // result is the output of the user's function and answer is the expected output
+        const result = fn(nums[i], targets[i]);
+        console.log(result)
+        assert.deepStrictEqual(result, answers[i]);
+      }
+      return true;
     } catch (error) {
-        console.log('twoSum handler fucntion error')
+        console.log('twoSum handler function error')
         throw new Error(error)
     }
 }

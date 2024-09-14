@@ -1,9 +1,13 @@
+import useHasMounted from "@/components/hooks/useHasMounted";
 import Topbar from "@/components/Topbar/Topbar";
 import Workspace from "@/components/Workspace/Workspace";
 import { problems } from "@/utils/problems";
 import React from "react";
 
 const ProblemPage = ({problem}) => {
+	const hasMounted = useHasMounted ();
+
+  if(!hasMounted) {return null;}
   return (
     <div>
       <Topbar problemPage={true} />
