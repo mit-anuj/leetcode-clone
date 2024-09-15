@@ -56,12 +56,14 @@ const Signup = () => {
         starredProblems: [],
       };
       try {
+        // console.log("Saving user to Firestore:", userData);
         await setDoc(doc(firestore, "users", newUser.user.uid), userData);
-        console.log("this is workding")
+        // console.log("User added successfully to Firestore");
       } catch (error) {
-        console.log(error.message);
+        console.error("Error adding user to Firestore:", error);
+        toast.error(error.message, { position: "top-center" });
       }
-      router.push("/api/dashboard");
+      router.push("/");
     } catch (error) {
       toast.error(error.message, { position: "top-center" });
     } finally {

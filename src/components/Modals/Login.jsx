@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const setauthModalState = useSetRecoilState(authModalState);
-  const [signInWithEmailAndPassword, user, loading, error] =
+  const [signInWithEmailAndPassword, loading, error] =
     useSignInWithEmailAndPassword(auth);
   const [inputs, setInputs] = useState({ email: "", password: "" });
   const router = useRouter();
@@ -16,23 +16,39 @@ const Login = () => {
   const handleChangeInput = (e) => {
     setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const handleSubmit = async(e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await signInWithEmailAndPassword(inputs.email, inputs.password);
+      const user = await signInWithEmailAndPassword(
+        inputs.email,
+        inputs.password
+      );
+      console.log(user);
       if (!user) return;
-      router.push("/api/dashboard");
+      const path = "/";
+      debugger;
+      router.push(path); // Redirecting to the home path ('/')
     } catch (error) {
       console.log(error.message);
     }
   };
 
   useEffect(() => {
-    if (error) toast.error("invalid credentials",{position:"top-center",autoClose:3000,theme:'dark'})
+    // if(user)
+    if (error) {
+      toast.error("Invalid credentials", {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "dark",
+      });
+    }
   }, [error]);
+
   const handleClick = (val) => {
     setauthModalState((prev) => ({ ...prev, type: val }));
   };
+
   return (
     <div>
       <form className="space-y-6 px-6 pb-4" onSubmit={handleSubmit}>
@@ -44,7 +60,6 @@ const Login = () => {
           <input
             onChange={handleChangeInput}
             type="email"
-            htmlFor="email"
             name="email"
             id="email"
             className="border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -59,7 +74,6 @@ const Login = () => {
           <input
             onChange={handleChangeInput}
             type="password"
-            htmlFor="password"
             name="password"
             id="password"
             className="border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
