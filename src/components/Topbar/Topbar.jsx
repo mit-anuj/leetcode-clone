@@ -44,7 +44,7 @@ const Topbar = ({ problemPage }) => {
           !problemPage ? "max-w-[1200px] mx-auto" : ""
         }`}
       >
-        <Link href="#" className="h-[22px] flex-1">
+        <Link href="/" className="h-[22px] flex-1">
           <img src="/logo-full.png" alt="logo" className="h-full" />
         </Link>
         {problemPage && (
